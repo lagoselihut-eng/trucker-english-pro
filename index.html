@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827"><meta name="description" content="Inglés técnico para operadores de tractocamión en Estados Unidos">
+<link rel="manifest" href="manifest.webmanifest">
+<title>TRUCKER ENGLISH PRO</title>
+<style>
+:root{--bg:#0b1220;--panel:#141f31;--panel2:#1b2940;--text:#f3f6fb;--muted:#aab7ca;--accent:#f4b942;--line:#2c3b52;--green:#69d6a5}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0b1220,#111d30);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:22px 18px 16px;background:#101827;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+.brand{font-size:12px;letter-spacing:2px;color:var(--accent);font-weight:800}.hero{font-size:24px;font-weight:850;margin:5px 0}.sub{color:var(--muted);font-size:13px}
+nav{display:flex;gap:8px;overflow:auto;padding:12px 14px;background:#101827;position:sticky;top:99px;z-index:2}
+nav button,.btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;padding:10px 13px;font-weight:700;white-space:nowrap}
+nav button.active,.btn.primary{background:var(--accent);color:#1a1a1a;border-color:var(--accent)}
+main{max-width:850px;margin:auto;padding:16px}.view{display:none}.view.active{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:16px;margin:12px 0}
+h2{font-size:21px;margin:4px 0 12px}h3{font-size:16px;margin:0 0 8px}.muted{color:var(--muted)}label{display:block;font-size:13px;color:var(--muted);margin:10px 0 5px}
+input,textarea,select{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:#0c1524;color:var(--text);font:inherit}
+textarea{min-height:90px;resize:vertical}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}.btn{cursor:pointer;margin:5px 4px 5px 0}.tag{display:inline-block;background:#27364c;color:#dce7f6;border-radius:30px;padding:5px 9px;font-size:12px;margin:3px}
+.result{background:#0d1727;border-radius:12px;padding:12px;margin-top:10px;border:1px solid var(--line)}.word{display:inline-block;background:#253750;border-radius:8px;padding:7px;margin:4px}.word b{color:var(--accent)}.good{color:var(--green)}.warn{color:#ffd17b}
+.item{padding:12px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.big{font-size:19px;font-weight:750}.translation{color:var(--muted);margin:4px 0 8px}
+small{color:var(--muted)}.progress{height:9px;background:#28374d;border-radius:20px;overflow:hidden}.progress span{display:block;height:100%;background:var(--green);width:0}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
+</style></head>
+<body>
+<header><div class="brand">TRUCKER ENGLISH PRO</div><div class="hero">Inglés profesional para trucking</div><div class="sub">DOT · carretera · mecánica · comunicación · pronunciación</div></header>
+<nav id="nav">
+<button class="active" data-view="analyzer">Analizador</button><button data-view="dot">DOT</button><button data-view="signs">Señales</button><button data-view="truck">Camión</button><button data-view="practice">Práctica</button><button data-view="progress">Progreso</button>
+</nav>
+<main>
+<section id="analyzer" class="view active">
+<div class="card"><h2>Analizador de frases</h2><p class="muted">Escribe una frase en inglés. Identifica verbos, TO BE, estructura y alternativas. El análisis es orientativo y puedes corregirlo según el contexto.</p>
+<label>Frase en inglés</label><textarea id="phrase" placeholder="Ej. Have you checked the trailer brakes?"></textarea>
+<div class="row"><button class="btn primary" onclick="analyze()">Analizar frase</button><button class="btn" onclick="speak(document.getElementById('phrase').value)">🔊 Escuchar</button><button class="btn" onclick="listenInto('phrase')">🎙 Dictar</button></div>
+<div id="analysisResult" class="result" hidden></div></div>
+<div class="card"><h3>Ejemplo guiado</h3><div class="big">Is your trailer properly secured?</div><div class="translation">¿Está tu remolque correctamente asegurado?</div><button class="btn" onclick="loadExample()">Analizar ejemplo</button><button class="btn" onclick="speak('Is your trailer properly secured?')">🔊 Escuchar</button></div>
+</section>
+<section id="dot" class="view"><div class="card"><h2>Simulador de inspección DOT</h2><p class="muted">Practica preguntas frecuentes. No sustituye la normativa ni asesoría legal; responde siempre con información verdadera.</p><div id="dotQuestion"></div><div class="row"><button class="btn primary" onclick="nextDot()">Siguiente pregunta</button><button class="btn" onclick="speak(currentDot().q)">🔊 Escuchar al oficial</button></div></div><div class="card"><h3>Frases útiles para el oficial</h3><div id="dotPhrases"></div></div></section>
+<section id="signs" class="view"><div class="card"><h2>Señalamientos viales de EE. UU.</h2><p class="muted">Estudia el significado y practica cómo explicarlo a un oficial. Las restricciones concretas dependen de la señal, la vía y la jurisdicción.</p><div id="signList"></div></div></section>
+<section id="truck" class="view"><div class="card"><h2>Partes y mecánica del tractocamión</h2><label>Buscar término</label><input id="truckSearch" placeholder="Ej. air brake, fifth wheel..." oninput="renderTruck()"><div id="truckList"></div></div></section>
+<section id="practice" class="view"><div class="card"><h2>Pronunciación y conversación</h2><p class="muted">Escucha la frase, repítela y usa el dictado del teléfono si tu navegador admite reconocimiento de voz.</p><label>Voz</label><select id="voice"><option value="male">Preferencia masculina (si está disponible)</option><option value="female">Preferencia femenina (si está disponible)</option></select><label>Frase para practicar</label><textarea id="practiceText">I completed my pre-trip inspection, and everything is working properly.</textarea><button class="btn primary" onclick="speak(document.getElementById('practiceText').value)">🔊 Reproducir</button><button class="btn" onclick="listenInto('practiceText')">🎙 Hablar / dictar</button><div id="speechStatus" class="result">La disponibilidad de voces y reconocimiento depende de Android y del navegador.</div></div><div class="card"><h3>Reto rápido</h3><p>Traduce mentalmente: “I noticed an air leak near the brake chamber.”</p><button class="btn" onclick="document.getElementById('challengeAnswer').hidden=false">Ver respuesta</button><div id="challengeAnswer" hidden class="result">Noté una fuga de aire cerca de la cámara de freno.</div></div></section>
+<section id="progress" class="view"><div class="card"><h2>Tu progreso</h2><div class="big" id="score">0 actividades completadas</div><p class="muted">El progreso se guarda localmente en este dispositivo.</p><div class="progress"><span id="bar"></span></div><p id="progressText" class="muted"></p><button class="btn" onclick="resetProgress()">Reiniciar progreso</button></div><div class="card"><h3>Objetivos de estudio</h3><p>1. Analiza 5 frases.</p><p>2. Practica 5 preguntas DOT.</p><p>3. Aprende 10 términos técnicos.</p><p>4. Identifica 10 señalamientos.</p></div></section>
+</main><footer>TRUCKER ENGLISH PRO · Versión inicial 0.1 · Contenido educativo</footer>
+<script>
+const $=id=>document.getElementById(id);
+let completed=Number(localStorage.getItem('tep_done')||0), dotIndex=0;
+const be=['am','is','are','was','were','be','been','being'];
+const irregular={have:'have',has:'have',had:'have',do:'do',does:'do',did:'do',go:'go',went:'go',gone:'go',see:'see',saw:'see',seen:'see',take:'take',took:'take',taken:'take',make:'make',made:'make',get:'get',got:'get',give:'give',gave:'give',given:'give',show:'show',check:'check',checked:'check',drive:'drive',drove:'drive',driven:'drive',inspect:'inspect',inspected:'inspect',carry:'carry',carried:'carry',secure:'secure',secured:'secure',notice:'notice',noticed:'notice',work:'work',working:'work',leak:'leak',leaking:'leak'};
+function mark(){completed++;localStorage.setItem('tep_done',completed);renderProgress()}
+function analyze(){let s=$('phrase').value.trim();if(!s)return;let tokens=s.match(/[A-Za-z]+(?:'[A-Za-z]+)?|[0-9]+|[^\sA-Za-z0-9]/g)||[];let found=[];tokens.forEach((t,i)=>{let x=t.toLowerCase().replace(/[.,?!]/g,'');if(be.includes(x))found.push({t,kind:'TO BE',detail:'Forma del verbo TO BE'});else if(irregular[x])found.push({t,kind:'Verbo',detail:'Verbo identificado; raíz aproximada: '+irregular[x]});else if(/(ed|ing)$/.test(x)&&x.length>4)found.push({t,kind:'Posible verbo',detail:'Terminación verbal; revisar contexto'});});
+let beFound=found.filter(x=>x.kind==='TO BE');let html='<h3>Resultado</h3><div class="big">'+escapeHtml(s)+'</div><p><span class="tag">'+(beFound.length?'TO BE detectado':'TO BE no detectado')+'</span><span class="tag">'+found.length+' posible(s) verbo(s)</span></p>';
+html+='<p><b>Palabras identificadas</b></p>'+(found.length?found.map(x=>`<div class="word"><b>${escapeHtml(x.t)}</b><br><small>${x.kind}: ${x.detail}</small></div>`).join(''):'<p class="muted">No se detectaron verbos con el analizador básico. Puede haber verbos no reconocidos o expresiones compuestas.</p>');
+html+='<p><b>Estructura y contexto</b></p><p class="muted">'+structure(s)+'</p><p class="warn">Nota: el análisis automático es una primera aproximación. Los verbos compuestos, modales, participios y usos como sustantivo requieren contexto.</p>';
+$('analysisResult').innerHTML=html;$('analysisResult').hidden=false;mark();}
+function structure(s){let l=s.toLowerCase();if(/^(do|does|did|is|are|am|was|were|have|has|had|can|could|would|will|should)\b/.test(l))return'Probable pregunta de sí/no: auxiliar o verbo antes del sujeto.';if(/^(where|when|why|what|who|how)\b/.test(l))return'Probable pregunta informativa: palabra interrogativa al inicio.';if(/^(show|check|make|keep|provide|give|tell|stop|turn|use)\b/.test(l))return'Probable oración imperativa: verbo base al inicio.';return'Oración declarativa o estructura mixta. Identifica sujeto, verbo principal y complementos según el contexto.'}
+function loadExample(){$('phrase').value='Is your trailer properly secured?';analyze()}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function speak(t){if(!t||!('speechSynthesis'in window)){$('speechStatus').textContent='La síntesis de voz no está disponible en este navegador.';return}speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-US';let vs=speechSynthesis.getVoices();let pref=$('voice')?.value||'male';let candidates=vs.filter(v=>v.lang.toLowerCase().startsWith('en-us'));let gender=candidates.find(v=>pref==='female'?/female|woman|samantha|zira|ava/i.test(v.name):/male|man|david|guy/i.test(v.name));if(gender)u.voice=gender;u.rate=.88;speechSynthesis.speak(u)}
+function listenInto(id){let SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$('speechStatus').textContent='Reconocimiento de voz no disponible. Usa el micrófono del teclado Android o Chrome compatible.';return}let r=new SR();r.lang='en-US';r.interimResults=false;r.onresult=e=>{$(id).value=e.results[0][0].transcript;$('speechStatus').textContent='Texto reconocido: '+e.results[0][0].transcript};r.onerror=e=>$('speechStatus').textContent='No se pudo reconocer el audio: '+e.error;r.start()}
+const dots=[
+{q:'May I see your driver’s license and medical certificate?',a:'Yes, officer. Here is my CDL, and I have my medical certificate with me.',es:'¿Puedo ver su licencia y certificado médico?',ae:'Sí, oficial. Aquí está mi CDL y tengo conmigo mi certificado médico.'},
+{q:'Have you completed your pre-trip inspection?',a:'Yes. I checked the tires, brakes, lights, mirrors, and air lines.',es:'¿Completó la inspección previa al viaje?',ae:'Sí. Revisé las llantas, frenos, luces, espejos y líneas de aire.'},
+{q:'Are you hauling hazardous materials?',a:'No, officer. I am not hauling hazardous materials.',es:'¿Transporta materiales peligrosos?',ae:'No, oficial. No transporto materiales peligrosos.'},
+{q:'Where are your shipping papers?',a:'They are in the document holder, right here.',es:'¿Dónde están sus documentos de carga?',ae:'Están en el portadocumentos, aquí mismo.'},
+{q:'Is your ELD functioning properly?',a:'Yes, it is working properly. I can show you the current log.',es:'¿Funciona correctamente su ELD?',ae:'Sí, funciona correctamente. Puedo mostrarle el registro actual.'},
+{q:'What is the height of your vehicle?',a:'The total vehicle height is ___ feet and ___ inches.',es:'¿Cuál es la altura de su vehículo?',ae:'La altura total del vehículo es de ___ pies y ___ pulgadas.'}
+];
+function currentDot(){return dots[dotIndex%dots.length]}
+function nextDot(){dotIndex=(dotIndex+1)%dots.length;renderDot()}
+function renderDot(){let d=currentDot();$('dotQuestion').innerHTML=`<div class="tag">Pregunta ${dotIndex+1} de ${dots.length}</div><div class="big">${d.q}</div><div class="translation">${d.es}</div><button class="btn" onclick="document.getElementById('dotAnswer').hidden=false">Mostrar respuesta modelo</button><div id="dotAnswer" hidden class="result"><b>Respuesta:</b><p>${d.a}</p><small>${d.ae}</small><br><button class="btn" onclick="speak(${JSON.stringify(d.a)})">🔊 Escuchar respuesta</button></div>`;mark()}
+const signs=[
+['LOW CLEARANCE','Altura libre limitada','Comprueba la altura total del conjunto antes de entrar. No avances si excede la altura indicada.','I noticed the low-clearance sign, so I checked my vehicle height before proceeding.'],
+['WEIGHT LIMIT','Límite de peso','Verifica el peso aplicable al vehículo, eje o puente y respeta la restricción.','I saw the weight-limit sign and checked whether my axle weight was within the posted limit.'],
+['NO TRUCKS','Prohibido el paso de camiones','No ingreses si la prohibición aplica a tu vehículo o combinación. Busca una ruta permitida.','I did not enter because trucks are prohibited on that road.'],
+['TRUCK ROUTE','Ruta para camiones','Indica una ruta designada para vehículos comerciales; sigue las restricciones adicionales.','I followed the designated truck route.'],
+['TRUCKS USE RIGHT LANE','Camiones utilicen el carril derecho','Usa el carril indicado cuando sea seguro y conforme a las marcas y reglas locales.','I moved to the right lane as indicated by the sign.'],
+['STEEP GRADE','Pendiente pronunciada','Reduce velocidad antes del descenso y utiliza la marcha y técnicas apropiadas.','I reduced my speed before going down the steep grade.'],
+['RUNAWAY TRUCK RAMP','Rampa de emergencia para camiones','Vía de escape para vehículos pesados que pierden capacidad de frenado en descenso.','I understand that the runaway truck ramp is an emergency escape route.'],
+['ROAD CLOSED','Camino cerrado','No continúes por la vía cerrada; sigue el desvío oficial.','I followed the posted detour because the road was closed.'],
+['BRIDGE ICES BEFORE ROAD','El puente se congela antes que la carretera','Precaución por posible hielo en el puente. Reduce velocidad y evita maniobras bruscas.','I slowed down because the bridge may be icy.'],
+['RAILROAD CROSSING','Cruce ferroviario','Acércate con precaución y cumple señales, barreras y normas aplicables a vehículos comerciales.','I stopped before the railroad crossing as required.'],
+['WEIGH STATION','Báscula / estación de pesaje','Sigue las instrucciones de entrada, báscula y señal electrónica.','I entered the weigh station when the sign instructed commercial vehicles to enter.'],
+['NO ENGINE BRAKE','Prohibido usar freno de motor','Respeta la restricción indicada en ese tramo.','I turned off the engine brake in the posted restricted area.']
+];
+function renderSigns(){$('signList').innerHTML=signs.map((s,i)=>`<div class="item"><div class="big">${s[0]}</div><div class="translation">${s[1]}</div><p>${s[2]}</p><div class="result"><b>Explicación al oficial:</b><p>${s[3]}</p><button class="btn" onclick="speak(${JSON.stringify(s[3])})">🔊 Escuchar</button><button class="btn" onclick="mark()">Marcar aprendida ✓</button></div></div>`).join('')}
+const trucks=[
+['Fifth wheel','Quinta rueda','The fifth wheel locks the trailer kingpin to the tractor.'],
+['Kingpin','Perno rey','The kingpin connects the trailer to the fifth wheel.'],
+['Landing gear','Patas de apoyo','Lower the landing gear before uncoupling the trailer.'],
+['Glad hands','Conexiones de aire','The glad hands connect the tractor and trailer air lines.'],
+['Air compressor','Compresor de aire','The air compressor supplies compressed air to the braking system.'],
+['Brake chamber','Cámara de freno','The brake chamber converts air pressure into mechanical force.'],
+['Slack adjuster','Ajustador de freno','The slack adjuster helps maintain proper brake adjustment.'],
+['Drive axle','Eje motriz','The drive axle transfers engine power to the wheels.'],
+['Differential','Diferencial','The differential allows wheels to rotate at different speeds.'],
+['Mud flap','Guardafango / faldón','The mud flap helps reduce water and debris thrown by the tires.'],
+['Alternator','Alternador','The alternator charges the batteries while the engine is running.'],
+['Radiator','Radiador','The radiator helps keep the engine at operating temperature.'],
+['Air leak','Fuga de aire','I hear an air leak near the brake chamber.'],
+['Tread depth','Profundidad del dibujo de la llanta','I need to check the tire tread depth.']
+];
+function renderTruck(){let q=($('truckSearch').value||'').toLowerCase();$('truckList').innerHTML=trucks.filter(x=>x.join(' ').toLowerCase().includes(q)).map(x=>`<div class="item"><b>${x[0]}</b> — ${x[1]}<p class="muted">${x[2]}</p><button class="btn" onclick="speak(${JSON.stringify(x[0])})">🔊 Término</button><button class="btn" onclick="speak(${JSON.stringify(x[2])})">🔊 En contexto</button></div>`).join('')}
+function renderProgress(){$('score').textContent=completed+' actividades completadas';$('bar').style.width=Math.min(100,completed*2)+'%';$('progressText').textContent='Meta inicial: 50 actividades. Sigue practicando y revisa las respuestas en situaciones reales.'}
+function resetProgress(){if(confirm('¿Reiniciar el progreso guardado en este dispositivo?')){completed=0;localStorage.setItem('tep_done',0);renderProgress()}}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.view).classList.add('active')}));
+renderDot();renderSigns();renderTruck();renderProgress();
+if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script></body></html>

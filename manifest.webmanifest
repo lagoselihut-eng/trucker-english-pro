@@ -1,0 +1,9 @@
+{
+  "name": "TRUCKER ENGLISH PRO",
+  "short_name": "Trucker English",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#101827",
+  "description": "Ingl\u00e9s profesional para operadores de tractocami\u00f3n"
+}
